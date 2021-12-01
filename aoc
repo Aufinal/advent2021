@@ -1,0 +1,9 @@
+#!/bin/bash
+if [[ $# -eq 1 ]] 
+then
+    FILENAME=$1
+else
+    FILENAME=$2
+fi
+
+julia $1.jl inputs/$FILENAME
