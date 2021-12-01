@@ -1,5 +1,5 @@
 function find_inc(numbers, gap)
-    return sum(numbers[i+gap] > numbers[i] for i in 1:length(numbers)-gap)
+    return sum(numbers[gap+1:end] .> numbers[1:end-gap])
 end
 
 open(ARGS[1]) do file
