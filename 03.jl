@@ -30,14 +30,13 @@ end
 open(ARGS[1]) do file
     diagnostic_report = map(parse_line, readlines(file))
 
-    n = length(diagnostic_report)
-    v = sum(diagnostic_report)
-    gamma_rate = undigits(v .≥ n/2, 2)
-    epsilon_rate = undigits(v .< n/2, 2)
+    majority = sum(diagnostic_report) .≥ length(diagnostic_report)/2
+    gamma_rate = undigits(majority, 2)
+    epsilon_rate = undigits(.!majority, 2)
     println(gamma_rate * epsilon_rate)
 
 
-    og_rating = rating(diagnostic_report, ≥, 1)
+    o2_rating = rating(diagnostic_report, ≥, 1)
     co2_rating = rating(diagnostic_report, <, 1)
-    println(og_rating * co2_rating)
+    println(o2_rating * co2_rating)
 end
