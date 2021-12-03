@@ -13,30 +13,32 @@ function undigits(d, base)
     return s
 end
 
-function rating(d_array, cmp, i)
-    n = length(d_array)
-    if n == 1
-        return undigits(d_array[1], 2)
+function rating(d_array, cmp, mask, mask_size, i)
+    if mask_size == 1
+        idx = findfirst(isequal(1), mask)
+        return undigits(d_array[idx], 2)
     end
 
-    s = sum(x[i] for x in d_array)
-    d = cmp(s, n/2)
+    d_sum = sum(m * x[i] for (x, m) in zip(d_array, mask))
+    d = cmp(d_sum, mask_size / 2)
 
-    new_array = filter(x -> x[i] == d, d_array)
-    return rating(new_array, cmp, i+1)
+    mask = mask .& (getindex.(d_array, i) .== d)
+    mask_size = cmp(d_sum, mask_size - d_sum) ? d_sum : mask_size - d_sum
+    return rating(d_array, cmp, mask, mask_size, i + 1)
 end
 
 
 open(ARGS[1]) do file
     diagnostic_report = map(parse_line, readlines(file))
+    n_lines = length(diagnostic_report)
 
-    majority = sum(diagnostic_report) .≥ length(diagnostic_report)/2
+    majority = sum(diagnostic_report) .≥ n_lines / 2
     gamma_rate = undigits(majority, 2)
     epsilon_rate = undigits(.!majority, 2)
     println(gamma_rate * epsilon_rate)
 
 
-    o2_rating = rating(diagnostic_report, ≥, 1)
-    co2_rating = rating(diagnostic_report, <, 1)
+    o2_rating = rating(diagnostic_report, ≥, trues(n_lines), n_lines, 1)
+    co2_rating = rating(diagnostic_report, <, trues(n_lines), n_lines, 1)
     println(o2_rating * co2_rating)
 end
