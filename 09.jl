@@ -12,6 +12,7 @@ open(ARGS[1]) do file
     root = fill((0, 0), m, n)
     part_1 = 0
     visited = falses(m, n)
+    cluster_size = Dict{Tuple{Int,Int},Int}()
 
     for i = 1:m, j = 1:n
 
@@ -29,6 +30,7 @@ open(ARGS[1]) do file
 
             visited[x, y] = true
             root[x, y] = (i, j)
+            cluster_size[(i, j)] = get(cluster_size, (i, j), 0) + 1
             for (δx, δy) in directions
                 if checkbounds(Bool, board, x + δx, y + δy) && board[x+δx, y+δy] != 9
                     push!(s, (x + δx, y + δy))
@@ -38,14 +40,7 @@ open(ARGS[1]) do file
     end
 
     println(part_1)
-
-    c = Dict{Tuple{Int,Int},Int}()
-    for i = 1:m, j = 1:n
-        r = root[i, j]
-        if r != (0, 0)
-            c[r] = get(c, r, 0) + 1
-        end
-    end
-    println(prod(sort(collect(values(c)))[end-2:end]))
+    sizes = sort(collect(values(cluster_size)))
+    println(prod(sizes[end-2:end]))
 
 end
